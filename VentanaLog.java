@@ -1,5 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  * Ventana para el login del nuevo usuario,
@@ -11,6 +13,7 @@ import java.awt.*;
  * @Author: Alan Capilla
  */
 public class VentanaLog extends JFrame {
+    private VentanaChat ventanaChat =  new VentanaChat();
 
     private JButton chatear;
     private TextField apodo;
@@ -37,6 +40,14 @@ public class VentanaLog extends JFrame {
         chatear = new JButton("Chatear");
         chatear.setBounds(230,170,100,30);
         add(chatear);
+
+        chatear.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+                ventanaChat.setVisible(true);
+            }
+        });
     }
     public void textfiel(){
         apodo = new TextField();
@@ -68,3 +79,4 @@ public class VentanaLog extends JFrame {
 
 
 }
+
