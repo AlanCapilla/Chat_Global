@@ -1,3 +1,6 @@
+/**
+ * Clase Cliente
+ */
 
 /**
  * Clase Cliente
@@ -5,6 +8,7 @@
 import java.io.DataOutputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.net.Socket;
@@ -12,12 +16,18 @@ import java.util.Scanner;
 
 public class Cliente {
 	static Socket cliente;
+
+	//HashMap<String, String> nickname = new HashMap<String, String>();
+
+
 	public static void main(String[] args) {
 		Scanner teclado = new Scanner(System.in);
 		int opcion=0;
-		try {
-			cliente = new Socket("172.16.4.106", 4500);
 
+		try {
+			cliente = new Socket("Ingresa tu ip", 4500);
+
+			String key = cliente.getInetAddress().getHostAddress();
 
 			/***** ESCRIBIMOS ****/
 			//Mandamos saludo al servidor
@@ -29,17 +39,20 @@ public class Cliente {
 			Logger.getLogger(Cliente.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
-
 	public static void menu() throws IOException {
 		Scanner sc = new Scanner(System.in);
 		int opcion;
+
+		System.out.println("Ingresa apodo: ");
+		String apaodo = sc.nextLine();
 
 		do{
 			System.out.println("Ingresa una opcion 1 para escrbir msj, 3 para salir");
 			opcion = sc.nextInt();
 			switch (opcion){
 				case 1:
-					escrbirMensaje();
+
+					escrbirMensaje(apaodo);
 					break;
 				case 2:
 					break;
@@ -56,13 +69,13 @@ public class Cliente {
 
 	}
 
-	public static void escrbirMensaje() throws IOException {
+	public static void escrbirMensaje(String apodo) throws IOException {
 		Scanner sc = new Scanner(System.in);
 		mensaje = new DataOutputStream(cliente.getOutputStream());//DataOutputStream- envia informacion al socket del servidor
 
 		System.out.println("Ingresa un texto");
 		String txt = sc.nextLine();
-		mensaje.writeUTF(txt);
+		mensaje.writeUTF(apodo+": "+txt);
 		mensaje.flush();
 		sc.reset();
 
@@ -86,5 +99,3 @@ public class Cliente {
 		}
 	}
 }
-
-
