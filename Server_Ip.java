@@ -1,33 +1,61 @@
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 public class Server_Ip {
+    private static final int puerto = 4500;
+
     public static void main(String[] args) {
-        try{
-            int puerto = 4500;
-            ServerSocket serverSocket = new ServerSocket(puerto);
+
+
+        try(ServerSocket serverSocket = new ServerSocket(puerto);){
+
             System.out.println("Servidor en linea "+puerto);
 
-            Socket cliente = serverSocket.accept();
-            System.out.println("Conexion establecida" + cliente.getInetAddress().getHostAddress());
 
             while (true) {
 
-
-                DataInputStream entrada = new DataInputStream(cliente.getInputStream());
-
-                String mensaje = (String)entrada.readUTF();
-                System.out.println(mensaje);
-
+                Socket cliente = serverSocket.accept();
+                System.out.println("Nuevo cliente conectado: " + cliente.getInetAddress().getHostAddress());
+                new ClientHandler(cliente).run();
 
             }
         }catch (IOException e) {
             throw new RuntimeException(e);
         }
 
+    }
+}
+
+class ClientHandler extends Thread{
+    private Socket cliente;
+
+    public ClientHandler(Socket cliente){
+        this.cliente =  cliente;
+
+    }
+
+    @Override
+    public void run(){
+        try(
+                PrintWriter out = new PrintWriter(cliente.getOutputStream(), true);
+                BufferedReader in = new BufferedReader(new InputStreamReader(cliente.getInputStream()))
+        ){
+
+            DataInputStream entrada = new DataInputStream(cliente.getInputStream());
+            String mensaje = (String)entrada.readUTF();
+            System.out.println(mensaje);
+
+
+        } catch (IOException e) {
+            System.err.println("Error en la comunicación con el cliente: " + e.getMessage());
+        }finally {
+            try {
+                cliente.close();
+            }catch (IOException e){
+                System.err.println("Error al cerrar la conexión del cliente: " + e.getMessage());
+            }
+        }
     }
 }
 
